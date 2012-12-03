@@ -17,7 +17,7 @@ import org.OpenNI.*;
 
 import java.io.File;
 
-public class CaptureThreadManager {
+class CaptureThreadManager {
     public interface Feedback {
         public enum Error {FailedToStartCapture, FailedDuringCapture, FailedToStartRecording}
 

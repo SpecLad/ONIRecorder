@@ -2,7 +2,7 @@ package org.pointclouds.onirec.grab;
 
 import org.OpenNI.MapOutputMode;
 
-public abstract class DummyGenerator implements Generator {
+abstract class DummyGenerator implements Generator {
     private static final MapOutputMode mode;
 
     static {

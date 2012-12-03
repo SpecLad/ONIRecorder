@@ -2,7 +2,7 @@ package org.pointclouds.onirec.grab;
 
 import org.OpenNI.DepthMetaData;
 
-public class OpenNIDepthGenerator extends OpenNIGenerator implements DepthGenerator {
+class OpenNIDepthGenerator extends OpenNIGenerator implements DepthGenerator {
     private final org.OpenNI.DepthGenerator wrapped;
 
     public OpenNIDepthGenerator(org.OpenNI.DepthGenerator wrapped) {

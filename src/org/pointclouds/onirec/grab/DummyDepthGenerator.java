@@ -5,7 +5,7 @@ import org.OpenNI.MapOutputMode;
 
 import java.nio.ByteBuffer;
 
-public class DummyDepthGenerator extends DummyGenerator implements DepthGenerator {
+class DummyDepthGenerator extends DummyGenerator implements DepthGenerator {
     private final ByteBuffer buffer;
     private final DepthMetaData metaData;
 

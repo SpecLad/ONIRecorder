@@ -5,7 +5,7 @@ import org.OpenNI.MapOutputMode;
 
 import java.nio.ByteBuffer;
 
-public class DummyColorGenerator extends DummyGenerator implements ColorGenerator {
+class DummyColorGenerator extends DummyGenerator implements ColorGenerator {
     private final ByteBuffer buffer;
     private final ImageMetaData metaData;
 
