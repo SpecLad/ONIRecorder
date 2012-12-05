@@ -11,7 +11,6 @@ abstract class OpenNIContext implements Context {
     private static final String TAG = "onirec.grab.OpenNIContext";
 
     private org.OpenNI.Context context;
-    //private Recorder recorder;
     private PclzfWriter writer;
 
     public OpenNIContext() throws GeneralException {
@@ -76,23 +75,6 @@ abstract class OpenNIContext implements Context {
         } catch (IOException e) {
             throw new GeneralException(e.getMessage());
         }
-
-/*
-        recorder = Recorder.create(context, "oni");
-
-        try {
-            recorder.setDestination(RecordMedium.FILE, fileName.getAbsolutePath());
-
-            for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.IMAGE))
-                recorder.addNodeToRecording(node_info.getInstance(), CodecID.Uncompressed);
-
-            for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.DEPTH))
-                recorder.addNodeToRecording(node_info.getInstance(), CodecID.Uncompressed);
-        } catch (GeneralException e) {
-            recorder.dispose();
-            throw e;
-        }
-*/
     }
 
     @Override
