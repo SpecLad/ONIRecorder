@@ -88,7 +88,7 @@ class CaptureThreadManager {
                             public void run() throws Timer.ReturnException {
                                 try {
                                     context.waitAndUpdateAll();
-                                } catch (final StatusException se) {
+                                } catch (final GeneralException se) {
                                     final String message = "Failed to acquire a frame.";
                                     Log.e(TAG, message, se);
                                     reportError(Feedback.Error.FailedDuringCapture, se.getMessage());

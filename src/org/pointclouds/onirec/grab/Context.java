@@ -8,7 +8,7 @@ import java.io.File;
 public interface Context {
     void startAll() throws StatusException;
     void stopAll() throws StatusException;
-    void waitAndUpdateAll() throws StatusException;
+    void waitAndUpdateAll() throws GeneralException;
 
     ColorGenerator createColorGenerator() throws GeneralException;
 
