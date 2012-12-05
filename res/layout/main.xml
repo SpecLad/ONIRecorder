@@ -15,7 +15,7 @@
                       android:orientation="vertical"
                       android:layout_weight="1"
                       android:layout_margin="10dp">
-            <SurfaceView
+            <android.opengl.GLSurfaceView
                     android:id="@+id/surface_color"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"
@@ -44,7 +44,7 @@
                       android:orientation="vertical"
                       android:layout_weight="1"
                       android:layout_margin="10dp">
-            <SurfaceView
+            <android.opengl.GLSurfaceView
                     android:id="@+id/surface_depth"
                     android:layout_width="fill_parent"
                     android:layout_height="0dp"

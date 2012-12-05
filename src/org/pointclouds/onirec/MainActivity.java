@@ -5,17 +5,18 @@ import android.app.PendingIntent;
 import android.content.*;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import org.OpenNI.MapOutputMode;
+import org.libusb.UsbHelper;
 import org.pointclouds.onirec.grab.DummyContextFactory;
 import org.pointclouds.onirec.grab.LiveContextFactory;
 import org.pointclouds.onirec.grab.RecordingContextFactory;
-import org.OpenNI.MapOutputMode;
-import org.libusb.UsbHelper;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -26,8 +27,8 @@ public class MainActivity extends Activity {
 
     private TextView textStatus;
     private TextView textFps;
-    private SurfaceView surfaceColor;
-    private SurfaceView surfaceDepth;
+    private GLSurfaceView surfaceColor, surfaceDepth;
+    private SimpleTexRenderer rendererColor, rendererDepth;
     private Spinner spinnerColorMode, spinnerDepthMode;
 
     private ArrayAdapter<MapModeWrapper> spinnerAdapterColor, spinnerAdapterDepth;
@@ -94,10 +95,22 @@ public class MainActivity extends Activity {
 
         textStatus = (TextView) findViewById(R.id.text_status);
         textFps = (TextView) findViewById(R.id.text_fps);
-        surfaceColor = (SurfaceView) findViewById(R.id.surface_color);
-        surfaceDepth = (SurfaceView) findViewById(R.id.surface_depth);
+        surfaceColor = (GLSurfaceView) findViewById(R.id.surface_color);
+        surfaceDepth = (GLSurfaceView) findViewById(R.id.surface_depth);
         spinnerColorMode = (Spinner) findViewById(R.id.spinner_color_mode);
         spinnerDepthMode = (Spinner) findViewById(R.id.spinner_depth_mode);
+
+        surfaceColor.setEGLConfigChooser(false);
+        surfaceColor.setEGLContextClientVersion(2);
+        rendererColor = new SimpleTexRenderer(surfaceColor);
+        surfaceColor.setRenderer(rendererColor);
+        surfaceColor.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
+        surfaceDepth.setEGLConfigChooser(false);
+        surfaceDepth.setEGLContextClientVersion(2);
+        rendererDepth = new SimpleTexRenderer(surfaceDepth);
+        surfaceDepth.setRenderer(rendererDepth);
+        surfaceDepth.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         surfaceColor.getHolder().addCallback(surface_callbacks);
         surfaceDepth.getHolder().addCallback(surface_callbacks);
@@ -401,7 +414,7 @@ public class MainActivity extends Activity {
             boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
 
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
+            manager = new CaptureThreadManager(rendererColor, rendererDepth, feedback,
                     fake_grabber ? new DummyContextFactory() : new RecordingContextFactory(recording), enable_vis);
         }
 
@@ -570,7 +583,7 @@ public class MainActivity extends Activity {
             boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
             boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
 
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
+            manager = new CaptureThreadManager(rendererColor, rendererDepth, feedback,
                     fake_grabber ? new DummyContextFactory() : new LiveContextFactory(), enable_vis);
         }
 

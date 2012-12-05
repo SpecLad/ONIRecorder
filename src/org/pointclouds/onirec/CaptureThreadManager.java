@@ -1,19 +1,15 @@
 package org.pointclouds.onirec;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.SurfaceHolder;
+import org.OpenNI.*;
 import org.pointclouds.onirec.grab.ColorGenerator;
 import org.pointclouds.onirec.grab.ContextFactory;
 import org.pointclouds.onirec.grab.DepthGenerator;
-import org.OpenNI.*;
 
 import java.io.File;
 
@@ -35,8 +31,8 @@ class CaptureThreadManager {
     private final HandlerThread thread;
     private final Handler handler;
     private final Handler uiHandler = new Handler();
-    private final SurfaceHolder holderColor;
-    private final SurfaceHolder holderDepth;
+    private final SimpleTexRenderer rendererColor;
+    private final SimpleTexRenderer rendererDepth;
     private final Feedback feedback;
     private final boolean enableVisualization;
 
@@ -109,25 +105,22 @@ class CaptureThreadManager {
                                         @Override
                                         public void run() {
                                             if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
-                                                colorBitmap.recycle();
                                                 colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
                                                 colorBitmap.setHasAlpha(false);
                                             }
 
-                                            imageMapToBitmap(md.getDataPtr(), colorBitmap);
+                                            //noinspection SynchronizeOnNonFinalField
+                                            synchronized (colorBitmap) {
+                                                imageMapToBitmap(md.getDataPtr(), colorBitmap);
+                                            }
                                         }
                                     });
 
                                     Timer.time("colorDraw", new Timer.Timeable() {
                                         @Override
                                         public void run() {
-                                            Canvas canvas = holderColor.lockCanvas();
-
-                                            if (canvas != null) {
-                                                Rect canvas_size = holderColor.getSurfaceFrame();
-                                                canvas.drawBitmap(colorBitmap, null, canvas_size, null);
-                                                holderColor.unlockCanvasAndPost(canvas);
-                                            }
+                                            rendererColor.requestUpdateTexture(colorBitmap);
+                                            rendererColor.requestRender();
                                         }
                                     });
                                 }
@@ -145,25 +138,22 @@ class CaptureThreadManager {
                                         @Override
                                         public void run() throws Timer.ReturnException {
                                             if (depthBitmap.getWidth() != frame_width || depthBitmap.getHeight() != frame_height) {
-                                                depthBitmap.recycle();
                                                 depthBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
                                                 depthBitmap.setHasAlpha(false);
                                             }
 
-                                            depthMapToBitmap(md.getDataPtr(), depthBitmap, md.getZRes() - 1);
+                                            //noinspection SynchronizeOnNonFinalField
+                                            synchronized (depthBitmap) {
+                                                depthMapToBitmap(md.getDataPtr(), depthBitmap, md.getZRes() - 1);
+                                            }
                                         }
                                     });
 
                                     Timer.time("depthDraw", new Timer.Timeable() {
                                         @Override
                                         public void run() throws Timer.ReturnException {
-                                            Canvas canvas = holderDepth.lockCanvas();
-
-                                            if (canvas != null) {
-                                                Rect canvas_size = holderDepth.getSurfaceFrame();
-                                                canvas.drawBitmap(depthBitmap, null, canvas_size, new Paint(Paint.DITHER_FLAG));
-                                                holderDepth.unlockCanvasAndPost(canvas);
-                                            }
+                                            rendererDepth.requestUpdateTexture(depthBitmap);
+                                            rendererDepth.requestRender();
                                         }
                                     });
                                 }
@@ -193,10 +183,10 @@ class CaptureThreadManager {
         }
     };
 
-    public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback,
+    public CaptureThreadManager(SimpleTexRenderer rendererColor, SimpleTexRenderer rendererDepth, Feedback feedback,
                                 final ContextFactory contextFactory, boolean enableVisualization) {
-        this.holderColor = holderColor;
-        this.holderDepth = holderDepth;
+        this.rendererColor = rendererColor;
+        this.rendererDepth = rendererDepth;
         this.feedback = feedback;
         this.enableVisualization = enableVisualization;
 
