@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef org_pointclouds_onirec_PclzfWriter_PCLZF_HEADER_LENGTH
+#define org_pointclouds_onirec_PclzfWriter_PCLZF_HEADER_LENGTH 37L
 /*
  * Class:     org_pointclouds_onirec_PclzfWriter
  * Method:    compress
@@ -14,6 +16,14 @@ extern "C" {
  */
 JNIEXPORT jint JNICALL Java_org_pointclouds_onirec_PclzfWriter_compress
   (JNIEnv *, jclass, jint, jlong, jbyteArray);
+
+/*
+ * Class:     org_pointclouds_onirec_PclzfWriter
+ * Method:    deinterleaveRGB
+ * Signature: (IIJJ)V
+ */
+JNIEXPORT void JNICALL Java_org_pointclouds_onirec_PclzfWriter_deinterleaveRGB
+  (JNIEnv *, jclass, jint, jint, jlong, jlong);
 
 #ifdef __cplusplus
 }

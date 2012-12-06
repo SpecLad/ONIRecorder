@@ -2,6 +2,7 @@ package org.pointclouds.onirec.grab;
 
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.MapOutputMode;
+import org.pointclouds.onirec.NativeBuffer;
 
 import java.nio.ByteBuffer;
 

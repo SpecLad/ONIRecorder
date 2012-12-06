@@ -1,14 +1,14 @@
-#include "org_pointclouds_onirec_grab_NativeBuffer.h"
+#include "org_pointclouds_onirec_NativeBuffer.h"
 
 JNIEXPORT jlong JNICALL
-Java_org_pointclouds_onirec_grab_NativeBuffer_getPtr
+Java_org_pointclouds_onirec_NativeBuffer_getPtr
   (JNIEnv * env, jclass clazz, jobject buffer)
 {
   return reinterpret_cast<jlong>(env->GetDirectBufferAddress(buffer));
 }
 
 JNIEXPORT jlong JNICALL
-Java_org_pointclouds_onirec_grab_NativeBuffer_fillBuffer
+Java_org_pointclouds_onirec_NativeBuffer_fillBuffer
   (JNIEnv * env, jclass clazz, jobject buffer)
 {
   unsigned char * ptr = static_cast<unsigned char *>(env->GetDirectBufferAddress(buffer));

@@ -11,9 +11,12 @@ public class PclzfWriter implements Closeable {
     private final TarArchiveOutputStream stream;
     private int frameCount;
     private byte[] compressed = new byte[0];
+    private ByteBuffer deinterleaved = ByteBuffer.allocateDirect(0);
     private byte[] header = new byte[PCLZF_HEADER_LENGTH];
 
     private static native int compress(int size, long ptr, byte[] compressed);
+    private static native void deinterleaveRGB(int width, int height, long interleaved, long deinterleaved);
+
     private static final int PCLZF_HEADER_LENGTH = 37;
     private static final byte[] PCLZF_MAGIC = "PCLZF".getBytes();
     private static final byte[] PCLZF_TYPE_COLOR = "rgb24           ".getBytes();
@@ -63,7 +66,13 @@ public class PclzfWriter implements Closeable {
     }
 
     public void writeColor(int width, int height, long ptr) throws IOException {
-        writeFrame(width, height, width * height * 3, PCLZF_TYPE_COLOR, ptr);
+        if (deinterleaved.capacity() < width * height * 3) {
+            deinterleaved = ByteBuffer.allocateDirect(width * height * 3);
+        }
+
+        deinterleaveRGB(width, height, ptr, NativeBuffer.getPtr(deinterleaved));
+
+        writeFrame(width, height, width * height * 3, PCLZF_TYPE_COLOR, NativeBuffer.getPtr(deinterleaved));
     }
 
     public void writeDepth(int width, int height, long ptr) throws IOException {
