@@ -9,6 +9,10 @@ them, go to /3rdparty/android and run the provided scripts:
 ./openni-fetch.sh
 ./openni-build.sh
 
+You will also need to download the lastest version of Apache Commons
+Compress <http://commons.apache.org/compress/> and put the jar
+(commons-compress-x.y.z.jar) into the libs directory.
+
 After that, run the following in this directory (<pcl> means the full path to the PCL sources):
 
 export NDK_MODULE_PATH=<pcl>/3rdparty/android/ndk-modules

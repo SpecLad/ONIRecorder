@@ -621,7 +621,7 @@ public class MainActivity extends Activity {
                     int file_no = 0;
 
                     do
-                        currentRecording = new File(Environment.getExternalStorageDirectory(), "recording" + file_no++ + ".oni");
+                        currentRecording = new File(Environment.getExternalStorageDirectory(), "recording" + file_no++ + ".tar");
                     while (currentRecording.exists());
 
                     manager.startRecording(currentRecording);
