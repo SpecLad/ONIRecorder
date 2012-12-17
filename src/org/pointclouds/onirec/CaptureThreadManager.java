@@ -105,7 +105,7 @@ class CaptureThreadManager {
                                         @Override
                                         public void run() {
                                             if (colorBitmap.getWidth() != frame_width || colorBitmap.getHeight() != frame_height) {
-                                                colorBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                                                colorBitmap = Bitmap.createBitmap(frame_width / 2, frame_height / 2, Bitmap.Config.ARGB_8888);
                                                 colorBitmap.setHasAlpha(false);
                                             }
 
@@ -138,7 +138,7 @@ class CaptureThreadManager {
                                         @Override
                                         public void run() throws Timer.ReturnException {
                                             if (depthBitmap.getWidth() != frame_width || depthBitmap.getHeight() != frame_height) {
-                                                depthBitmap = Bitmap.createBitmap(frame_width, frame_height, Bitmap.Config.ARGB_8888);
+                                                depthBitmap = Bitmap.createBitmap(frame_width / 2, frame_height / 2, Bitmap.Config.ARGB_8888);
                                                 depthBitmap.setHasAlpha(false);
                                             }
 
