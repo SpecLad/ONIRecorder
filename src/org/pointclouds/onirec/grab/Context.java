@@ -15,7 +15,7 @@ public interface Context {
     DepthGenerator createDepthGenerator() throws GeneralException;
 
     void startRecording(File fileName) throws GeneralException;
-    void stopRecording();
+    void stopRecording() throws GeneralException;
 
-    void dispose();
+    void dispose() throws GeneralException;
 }

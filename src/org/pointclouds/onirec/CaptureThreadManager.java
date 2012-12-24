@@ -250,13 +250,19 @@ class CaptureThreadManager {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                context.stopRecording();
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        feedback.reportRecordingFinished();
-                    }
-                });
+                try {
+                    context.stopRecording();
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            feedback.reportRecordingFinished();
+                        }
+                    });
+                } catch (GeneralException ge) {
+                    final String message = "Failed to stop recording.";
+                    Log.e(TAG, message, ge);
+                    reportError(Feedback.Error.FailedDuringCapture, ge.getMessage());
+                }
             }
         });
     }
@@ -396,7 +402,12 @@ class CaptureThreadManager {
 
         if (depth != null) depth.dispose();
         if (color != null) color.dispose();
-        if (context != null) context.dispose();
+
+        if (context != null) try {
+            context.dispose();
+        } catch (GeneralException e) {
+            hasError = true;
+        }
     }
 
     public boolean hasError() {

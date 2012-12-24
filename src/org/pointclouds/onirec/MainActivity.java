@@ -577,8 +577,11 @@ public class MainActivity extends Activity {
         @Override
         public void leave() {
             manager.stop();
-            if (isRecording && manager.hasError()) //noinspection ResultOfMethodCallIgnored
+            if (isRecording && manager.hasError()) {
+                //noinspection ResultOfMethodCallIgnored
                 currentRecording.delete();
+                Toast.makeText(MainActivity.this, R.string.toast_failed_recording, Toast.LENGTH_LONG).show();
+            }
 
             textFps.setVisibility(View.INVISIBLE);
             spinnerColorMode.setVisibility(View.INVISIBLE);

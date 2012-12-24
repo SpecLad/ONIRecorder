@@ -3,7 +3,7 @@ package org.pointclouds.onirec;
 import android.content.Context;
 import org.OpenNI.MapOutputMode;
 
-class MapModeWrapper {
+final class MapModeWrapper {
     private final MapOutputMode mode;
     private final String modeStr;
 
