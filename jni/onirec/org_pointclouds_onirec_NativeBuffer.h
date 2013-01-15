@@ -23,6 +23,14 @@ JNIEXPORT jlong JNICALL Java_org_pointclouds_onirec_NativeBuffer_getPtr
 JNIEXPORT jlong JNICALL Java_org_pointclouds_onirec_NativeBuffer_fillBuffer
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     org_pointclouds_onirec_NativeBuffer
+ * Method:    copyToBuffer
+ * Signature: (JLjava/nio/Buffer;)V
+ */
+JNIEXPORT void JNICALL Java_org_pointclouds_onirec_NativeBuffer_copyToBuffer
+  (JNIEnv *, jclass, jlong, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -53,7 +53,7 @@ abstract class OpenNIContext implements Context {
                 ImageGenerator color = (ImageGenerator) node_info.getInstance();
                 ImageMetaData md = color.getMetaData();
 
-                recorder.enqueueColorFrame(md.getXRes(), md.getYRes(), md.getData().createByteBuffer());
+                recorder.enqueueColorFrame(md.getXRes(), md.getYRes(), md.getDataPtr());
             }
 
             for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.DEPTH))
@@ -61,7 +61,7 @@ abstract class OpenNIContext implements Context {
                 DepthGenerator depth = (DepthGenerator) node_info.getInstance();
                 DepthMetaData md = depth.getMetaData();
 
-                recorder.enqueueDepthFrame(md.getXRes(), md.getYRes(), md.getData().createShortBuffer());
+                recorder.enqueueDepthFrame(md.getXRes(), md.getYRes(), md.getDataPtr());
             }
         }
     }
