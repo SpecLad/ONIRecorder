@@ -1,13 +1,15 @@
 package org.pointclouds.onirec.grab;
 
-import java.io.File;
+import org.OpenNI.GeneralException;
+import org.OpenNI.StatusException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DummyContextFactory implements ContextFactory {
     @Override
     public Context createContext() {
-        return new Context() {
+        return new RecordingCapableContext() {
             List<DummyGenerator> generators = new ArrayList<DummyGenerator>();
 
             @Override
@@ -19,8 +21,22 @@ public class DummyContextFactory implements ContextFactory {
             }
 
             @Override
-            public void waitAndUpdateAll() {
+            protected void waitAndUpdateWithoutRecording() throws StatusException {
                 for (DummyGenerator gen: generators) gen.refresh();
+            }
+
+            @Override
+            protected void visitAllColorFrames(MetaDataAcceptor acceptor) throws GeneralException {
+                for (Generator gen : generators)
+                    if (gen instanceof ColorGenerator)
+                        acceptor.accept(gen.getMetaData());
+            }
+
+            @Override
+            protected void visitAllDepthFrames(MetaDataAcceptor acceptor) throws GeneralException {
+                for (Generator gen : generators)
+                    if (gen instanceof DepthGenerator)
+                        acceptor.accept(gen.getMetaData());
             }
 
             @Override
@@ -45,18 +61,6 @@ public class DummyContextFactory implements ContextFactory {
                 };
                 generators.add(gen);
                 return gen;
-            }
-
-            @Override
-            public void startRecording(File fileName) {
-            }
-
-            @Override
-            public void stopRecording() {
-            }
-
-            @Override
-            public void dispose() {
             }
         };
     }

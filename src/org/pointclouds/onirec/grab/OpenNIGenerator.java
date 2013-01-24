@@ -4,7 +4,7 @@ import org.OpenNI.MapGenerator;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.StatusException;
 
-class OpenNIGenerator implements Generator {
+abstract class OpenNIGenerator implements Generator {
     private final MapGenerator wrapped;
 
     OpenNIGenerator(MapGenerator wrapped) {

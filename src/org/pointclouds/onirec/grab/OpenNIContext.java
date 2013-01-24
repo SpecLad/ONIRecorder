@@ -2,14 +2,9 @@ package org.pointclouds.onirec.grab;
 
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.*;
-import org.pointclouds.onirec.PclzfWriter;
 
-import java.io.File;
-import java.io.IOException;
-
-abstract class OpenNIContext implements Context {
+abstract class OpenNIContext extends RecordingCapableContext {
     private org.OpenNI.Context context;
-    private Recorder recorder;
 
     public OpenNIContext() throws GeneralException {
         context = new org.OpenNI.Context();
@@ -21,10 +16,8 @@ abstract class OpenNIContext implements Context {
 
     @Override
     public void dispose() throws GeneralException {
-        if (recorder != null)
-            stopRecording();
-
         context.dispose();
+        super.dispose();
     }
 
     @Override
@@ -37,63 +30,26 @@ abstract class OpenNIContext implements Context {
         context.stopGeneratingAll();
     }
 
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     @Override
-    public void waitAndUpdateAll() throws GeneralException {
+    protected void visitAllDepthFrames(MetaDataAcceptor acceptor) throws GeneralException {
+        for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.DEPTH))
+        {
+            DepthGenerator depth = (DepthGenerator) node_info.getInstance();
+            acceptor.accept(depth.getMetaData());
+        }
+    }
+
+    @Override
+    protected void visitAllColorFrames(MetaDataAcceptor acceptor) throws GeneralException {
+        for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.IMAGE))
+        {
+            ImageGenerator color = (ImageGenerator) node_info.getInstance();
+            acceptor.accept(color.getMetaData());
+        }
+    }
+
+    @Override
+    protected void waitAndUpdateWithoutRecording() throws StatusException {
         context.waitAndUpdateAll();
-
-        if (recorder != null) {
-
-            IOException last_exc = recorder.getLastException();
-            if (last_exc != null)
-                throw new GeneralException(last_exc.getMessage());
-
-            for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.IMAGE))
-            {
-                ImageGenerator color = (ImageGenerator) node_info.getInstance();
-                ImageMetaData md = color.getMetaData();
-
-                recorder.enqueueColorFrame(md.getXRes(), md.getYRes(), md.getDataPtr());
-            }
-
-            for (NodeInfo node_info : context.enumerateExistingNodes(NodeType.DEPTH))
-            {
-                DepthGenerator depth = (DepthGenerator) node_info.getInstance();
-                DepthMetaData md = depth.getMetaData();
-
-                recorder.enqueueDepthFrame(md.getXRes(), md.getYRes(), md.getDataPtr());
-            }
-        }
-    }
-
-    @Override
-    public void startRecording(File fileName) throws GeneralException {
-        PclzfWriter writer;
-
-        try {
-            writer = new PclzfWriter(fileName);
-        } catch (IOException e) {
-            throw new GeneralException(e.getMessage());
-        }
-
-        recorder = new Recorder(writer);
-    }
-
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-    @Override
-    public void stopRecording() throws GeneralException {
-        IOException final_exc = recorder.getLastException();
-        recorder.quit();
-        if (final_exc == null) final_exc = recorder.getLastException();
-
-        try {
-            recorder.getWriter().close();
-        } catch (IOException e) {
-            if (final_exc == null) final_exc = e;
-        }
-
-        recorder = null;
-
-        if (final_exc != null) throw new GeneralException(final_exc.toString());
     }
 }
