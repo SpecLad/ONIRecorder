@@ -11,4 +11,17 @@
                 android:title="@string/pref_use_dummy_grabber"
                 android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_cat_general">
+        <CheckBoxPreference
+            android:key="enable_fps_limit"
+            android:title="@string/pref_enable_fps_limit"
+            android:defaultValue="false"/>
+        <org.pointclouds.onirec.SliderPreference
+            android:key="fps_limit"
+            android:title="@string/pref_fps_limit"
+            android:defaultValue="60"
+            android:dependency="enable_fps_limit"
+            android:max="60"/>
+    </PreferenceCategory>
 </PreferenceScreen>

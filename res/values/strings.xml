@@ -30,6 +30,9 @@
     <string name="mode_disabled">Disabled</string>
     <string name="mode_format" translatable="false">%1$dx%2$d @ %3$d FPS</string>
     <string name="pref_cat_debug">Debug options</string>
+    <string name="pref_cat_general">General options</string>
     <string name="pref_enable_visualization">Enable visualization</string>
     <string name="pref_use_dummy_grabber">Use dummy grabber</string>
+    <string name="pref_enable_fps_limit">Enable FPS limit</string>
+    <string name="pref_fps_limit">FPS limit</string>
 </resources>

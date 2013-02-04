@@ -11,11 +11,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+import org.OpenNI.MapOutputMode;
+import org.libusb.UsbHelper;
+import org.pointclouds.onirec.grab.ContextFactory;
 import org.pointclouds.onirec.grab.DummyContextFactory;
 import org.pointclouds.onirec.grab.LiveContextFactory;
 import org.pointclouds.onirec.grab.RecordingContextFactory;
-import org.OpenNI.MapOutputMode;
-import org.libusb.UsbHelper;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -179,6 +180,18 @@ public class MainActivity extends Activity {
                         new File(Environment.getExternalStorageDirectory(), recordings[i]))));
             }
         }).show(getFragmentManager(), "recordings");
+    }
+
+    private CaptureThreadManager createCaptureThreadManager(
+            ContextFactory factory, CaptureThreadManager.Feedback feedback) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
+        boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
+        boolean enable_fps_limit = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_FPS_LIMIT, false);
+        int fps_limit = prefs.getInt(PreferencesActivity.KEY_PREF_FPS_LIMIT, 0);
+
+        return new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
+                fake_grabber ? new DummyContextFactory() : factory, enable_vis, enable_fps_limit ? fps_limit : null);
     }
 
     private abstract static class State {
@@ -397,12 +410,7 @@ public class MainActivity extends Activity {
             textFps.setText(getResources().getString(R.string.x_fps, 0.));
             textStatus.setText(getResources().getString(R.string.status_replaying, recording.getName()));
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
-            boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
-
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    fake_grabber ? new DummyContextFactory() : new RecordingContextFactory(recording), enable_vis);
+            manager = createCaptureThreadManager(new RecordingContextFactory(recording), feedback);
         }
 
         @Override
@@ -566,12 +574,7 @@ public class MainActivity extends Activity {
 
             textStatus.setText(R.string.status_previewing);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-            boolean enable_vis = prefs.getBoolean(PreferencesActivity.KEY_PREF_ENABLE_VISUALIZATION, true);
-            boolean fake_grabber = prefs.getBoolean(PreferencesActivity.KEY_PREF_USE_DUMMY_GRABBER, false);
-
-            manager = new CaptureThreadManager(surfaceColor.getHolder(), surfaceDepth.getHolder(), feedback,
-                    fake_grabber ? new DummyContextFactory() : new LiveContextFactory(), enable_vis);
+            manager = createCaptureThreadManager(new LiveContextFactory(), feedback);
         }
 
         @Override

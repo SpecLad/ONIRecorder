@@ -39,6 +39,7 @@ class CaptureThreadManager {
     private final SurfaceHolder holderDepth;
     private final Feedback feedback;
     private final boolean enableVisualization;
+    private final Integer minFrameLength;
 
     private org.pointclouds.onirec.grab.Context context;
     private ColorGenerator color;
@@ -79,6 +80,8 @@ class CaptureThreadManager {
     private final Runnable processFrame = new Runnable() {
         @Override
         public void run() {
+            final long startMillis = SystemClock.uptimeMillis();
+
             try {
                 Timer.time("processFrame", new Timer.Timeable() {
                     @Override
@@ -185,7 +188,10 @@ class CaptureThreadManager {
                             lastUpdateTime = new_time;
                         }
 
-                        handler.post(processFrame);
+                        if (minFrameLength == null)
+                            handler.post(processFrame);
+                        else
+                            handler.postAtTime(processFrame, startMillis + minFrameLength);
                     }
                 });
             } catch (Timer.ReturnException ignored) {
@@ -194,11 +200,12 @@ class CaptureThreadManager {
     };
 
     public CaptureThreadManager(SurfaceHolder holderColor, SurfaceHolder holderDepth, Feedback feedback,
-                                final ContextFactory contextFactory, boolean enableVisualization) {
+                                final ContextFactory contextFactory, boolean enableVisualization, Integer fpsLimit) {
         this.holderColor = holderColor;
         this.holderDepth = holderDepth;
         this.feedback = feedback;
         this.enableVisualization = enableVisualization;
+        this.minFrameLength = fpsLimit == null ? null : 1000 / fpsLimit;
 
         thread = new HandlerThread("Capture Thread");
         thread.start();
